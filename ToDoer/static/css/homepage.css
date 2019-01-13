@@ -1,0 +1,119 @@
+body{
+color:#ffffff}
+
+#Lists{
+border-right-color: #ffffff;
+border-right-style: solid;}
+
+
+#container{
+background-color: #6b7a8f;
+}
+
+
+#todo {
+background-color:#dcc7aa;
+height: 550px;
+overflow:auto;
+border-radius:25px;
+-ms-overflow-style: none;
+overflow: -moz-scrollbars-none;
+border-style:solid;
+border-color:#6b7a8f;
+border-width:3px;
+padding:3%;
+}
+
+#todo::-webkit-scrollbar {
+ width: 0 !important
+ }
+
+#done::-webkit-scrollbar {
+ width: 0 !important
+ }
+
+#done {
+background-color:#dcc7aa;
+height: 550px;
+overflow:auto;
+border-radius:25px;
+-ms-overflow-style: none;
+overflow: -moz-scrollbars-none;
+border-style:solid;
+border-color:#6b7a8f;
+border-width:3px;
+padding:3%;
+}
+
+.card{
+background-color:#f7c331;
+border:2px;
+margin:2%;
+padding:2%;
+border-radius: 25px;
+}
+
+
+#logo{
+align:center;
+border-radius:25px;
+}
+
+
+#searchItem, #userOptions, #find_button, #clear_button{
+margin-top:20px;
+}
+#searchItem, #userOptions{
+width:80%;}
+
+#myNavBar{
+background-color:#f7882f}
+
+
+#footer{
+background-color:#f7882f;
+height:40px;
+}
+
+.nav-link {
+  font-weight: 500;
+  color: #333;
+}
+
+.nav-link {
+  margin-right: 4px;
+  color: #999;
+}
+
+.nav-link.active {
+  color: #f7882f;
+}
+
+.nav-link:hover
+.nav-link.active {
+  color: inherit;
+}
+
+.navbar-brand {
+  background-color: #6b7a8f;
+  padding-top: .75rem;
+  padding-bottom: .75rem;
+  font-size: 1rem;
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
+}
+
+.navbar .form-control {
+  background-color: #6b7a8f;
+  padding: .75rem 1rem;
+  border-width: 0;
+  border-radius: 0;
+}
+
+.modal-content {
+color:#6b7a8f
+}
+span {
+color:#6b7a8f}
+
+#shareTaskTitle, #shareTaskDue, #editTaskTitle, #editTaskDue, #addTaskTitle, #addTaskDue, #shareUser{
+width:100%;}

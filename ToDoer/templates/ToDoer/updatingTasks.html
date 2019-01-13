@@ -1,0 +1,41 @@
+{% if message %}
+<script>
+   alert('{{ message }}');
+</script>
+{% endif %}
+<div class="row">
+   <div id="todo" class="col-sm-7">
+      <h2>To Do</h2>
+      {% for time,due,task, colab in todo_list %}
+      <div id= {{ task }} class="card">
+         <div class="row">
+            {% csrf_token %}
+            <div class="col-sm-9"><input type="checkbox" id="checkbox" onclick="markAsDone( {{ time }} )" csrf-token="{{ csrf_token }}">{{ task }} </div>
+            <div class="col-sm-3"><img src="../../static/images/edit_icon.png" onclick="editModal( '{{ task }}' , '{{ time }}' , '{{ due }}' )" height="30px" width="30px">
+               <img src="../../static/images/share_icon.png"  onclick="shareModal( '{{ task }}' , '{{ time }}' , '{{ due }}' )" height="30px" width="30px">
+               <img src="../../static/images/delete_icon.png" height="28px" width="28px" id="delete_icons" onclick="deleteTask( {{ time }} )" csrf-token="{{ csrf_token }}" >
+            </div>
+         </div>
+         <div class="row">
+            <div class="col-sm-6"> <span>Due:</span>  {{ due }}</div>
+            <div class="col-sm-6"> <span>Collaborators:</span> {{ colab }}</div>
+         </div>
+      </div>
+      {% endfor %}
+   </div>
+   <div id="done" class="col-sm-5">
+      <h2>Done</h2>
+      {% for time,task, colab in done_list %}
+      <div id= {{ task }} class="card">
+         <div class="row">
+            {% csrf_token %}
+            <div class="col-sm-5"><img src="../../static/images/undo_icon.png" height="30px" width="30px" id="undo_icons" onclick="markAsNotDone( {{ time }} )" csrf-token="{{ csrf_token }}"> {{ task }} </div>
+            <div class="col-sm-5"><span>Collaborators:</span> {{ colab }}</div>
+            <div class="col-sm-2">
+               <img src="../../static/images/delete_icon.png" height="28px" width="28px" id="delete_icons" onclick="deleteTask( {{ time }} )" csrf-token="{{ csrf_token }}" >
+            </div>
+         </div>
+         {% endfor %}
+      </div>
+   </div>
+</div>

@@ -1,0 +1,5 @@
+  <div class="btn-group mr-2">
+   <button class="btn btn-sm btn-secondary">Welcome {{ username }}</button>
+   <button class="btn btn-sm btn-secondary" type="button" onclick="location.href='{% url 'logout' %}'">Logout</button>
+   <button class="btn btn-sm btn-secondary" type="button" onclick="settingsModal( '{{ username }}', '{{ surname }}', '{{ email }}' )">Settings</button>
+</div>

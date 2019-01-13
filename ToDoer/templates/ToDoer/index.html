@@ -1,0 +1,49 @@
+{% if message %}
+<script>
+   alert('{{ message }}');
+</script>
+{% endif %}
+<!doctype html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <!--<link rel="icon" href="../../../../favicon.ico">-->
+      <link href="../../static/css/index.css" rel="stylesheet" type="text/css">
+      <title>ToDo-er Login</title>
+      <!-- Bootstrap core CSS -->
+      <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" rel="stylesheet">
+      <!-- Custom styles for this template -->
+   </head>
+   <body class="text-center">
+      <div id="container">
+         <form id ="loginForm" action="postLogin" method="post" class="form-signin">
+            {% csrf_token %}
+            <img class="mb-4" src="../../static/images/ToDoerLogo.png" alt="" id="logo">
+            <h1 class="h3 mb-3 font-weight-normal">Sign in to your account</h1>
+            <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus name="email">
+            <input type="password" id="inputPassword" class="form-control" placeholder="Password" required name="password">
+            <div class="checkbox mb-3">
+               <label>
+               <input type="checkbox" value="remember-me"> Remember me
+               </label>
+            </div>
+            <button class="btn btn-light btn-block" type="submit">Sign in</button>
+            <button class="btn btn-light btn-block" type="button" onclick="location.href='{% url 'signUp' %}'">Sign Up</button>
+         </form>
+      </div>
+      <script src="https://www.gstatic.com/firebasejs/5.5.8/firebase.js"></script>
+      <script>
+         // Initialize Firebase
+         var config = {
+           apiKey: "AIzaSyBd7w652gzVMK2HCgM7GbS2pIYpiHypfJo",
+           authDomain: "todolist-comp41110.firebaseapp.com",
+           databaseURL: "https://todolist-comp41110.firebaseio.com",
+           projectId: "todolist-comp41110",
+           storageBucket: "",
+           messagingSenderId: "723004569445"
+         };
+         firebase.initializeApp(config);
+      </script>
+   </body>
+</html>

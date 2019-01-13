@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../static/css/homepage.css" rel="stylesheet" type="text/css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="../../static/js/my_jquery_functions.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+    <script src=https://code.jquery.com/jquery-migrate-3.0.0.min.js></script>
+
+</head>
+
+<body>
+    <!--Container which holds the content for the body of the application-->
+    <div class="container-fluid" id="container">
+        <!-- Navigation Bar-->
+        <div class="row" id="myNavBar">
+            <div class="col-sm-2"> <img src="../../static/images/ToDoerLogo.png" id="logo"></div>
+            <div class="col-sm-7">
+                <!--Search Bar with find and clear buttons-->
+                <form class="form-inline" method="get" action="searchDB" id="searchBar">
+                    <input type="text" placeholder="Search List or Task" id="searchItem" class="form-control" name="search">
+                    <button class="btn btn-sm btn-secondary" type="submit" onclick="location.href='/search/?uid={{ uid }}" id="find_button" form="searchBar">Find</button>
+                    <button class="btn btn-sm btn-secondary" type="submit" onclick="location.href='{% url 'clearSearch' %}'" id="clear_button" form="searchBar">Clear Search</button>
+                </form>
+            </div>
+            <div class="col-sm-3">
+                <!--User options to edit settings / sign out-->
+                <div class="btn-toolbar mb-2 mb-md-0" id="userOptions">
+                    <div class="btn-group mr-2">
+                        <button class="btn btn-sm btn-secondary">Welcome {{ username }}</button>
+                        <button class="btn btn-sm btn-secondary" type="button" onclick="location.href='{% url 'logout' %}'">Logout</button>
+                        <button class="btn btn-sm btn-secondary" type="button" onclick="settingsModal( '{{ username }}', '{{ surname }}', '{{ email }}' )">Settings</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Row that contains all task information-->
+        <div class="row h-100">
+            <div class="col-sm-12" id="Tasks">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Tasks</h1>
+                    <!-- Options to add new tasks/ share entire list-->
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group mr-2">
+                            <button class="btn btn-sm btn-outline-light" onclick="shareListModal()">Share Entire List</button>
+                            <button class="btn btn-sm btn-outline-light" type="button" id="addTask" data-target="#addTaskModal" data-toggle="modal">Add Task</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="board">
+
+                    <div class="row">
+                        <!-- To Do tasks-->
+                        <div id="todo" class="col-sm-7">
+                            <h2>To Do</h2> {% for time,due,task, colab in todo_list %}
+                            <!--Card for each task-->
+                            <div id={ { task }} class="card">
+                                <div class="row">
+                                    {% csrf_token %}
+                                    <div class="col-sm-9">
+                                        <!--Mark task as complete-->
+                                        <input type="checkbox" id="checkbox" onclick="markAsDone( {{ time }} )" csrf-token="{{ csrf_token }}">{{ task }} </div>
+                                    <!--Edit task-->
+                                    <div class="col-sm-3"><img src="../../static/images/edit_icon.png" onclick="editModal( '{{ task }}' , '{{ time }}' , '{{ due }}' )" height="30px" width="30px">
+                                        <!--share task-->
+                                        <img src="../../static/images/share_icon.png" onclick="shareModal( '{{ task }}' , '{{ time }}' , '{{ due }}' )" height="30px" width="30px">
+                                        <!--delete task-->
+                                        <img src="../../static/images/delete_icon.png" height="28px" width="28px" id="delete_icons" onclick="deleteTask( {{ time }} )" csrf-token="{{ csrf_token }}"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6"> <span>Due:</span> {{ due }}</div>
+                                    <div class="col-sm-6"> <span>Collaborators:</span> {{ colab }}</div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <!--Done Tasks-->
+                        <div id="done" class="col-sm-5">
+                            <h2>Done</h2> {% for time,task, colab in done_list %}
+                            <!--Card for each task-->
+                            <div id={ { task }} class="card">
+                                <div class="row">
+                                    {% csrf_token %}
+                                    <!--Mark as incomplete button-->
+                                    <div class="col-sm-5"><img src="../../static/images/undo_icon.png" height="30px" width="30px" id="undo_icons" onclick="markAsNotDone( {{ time }} )" csrf-token="{{ csrf_token }}"> {{ task }} </div>
+                                    <div class="col-sm-5"><span>Collaborators:</span> {{ colab }}</div>
+                                    <div class="col-sm-2">
+                                        <!--Delete task-->
+                                        <img src="../../static/images/delete_icon.png" height="28px" width="28px" id="delete_icons" onclick="deleteTask( {{ time }} )" csrf-token="{{ csrf_token }}"></div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!--Add Task Modal-->
+    <div class="modal fade" id="addTaskModal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title"><b>Add Task</b></h2>
+                    <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <form action="postAddTask" method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-sm-3">Task:</div>
+                            <div class="col-sm-9">
+                                <input type="text" name="task" id="addTaskTitle" required>
+                                <br>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">Due by:</div>
+                            <div class="col-sm-9">
+                                <input type="text" name="due" id="addTaskDue" required>
+                                <br>
+                                <br>
+                            </div>
+                        </div>
+                        <input type="submit" value="Add">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Edit Task Modal-->
+    <div class="modal fade" id="editTaskModal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title"><b>Edit Task</b></h2>
+                    <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editTaskForm" method="post" csrf-token="{{ csrf_token }}">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-sm-3">Task:</div>
+                            <div class="col-sm-9">
+                                <input type="text" name="task" name="task" id="editTaskTitle" required>
+                                <br>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">Due by:</div>
+                            <div class="col-sm-9">
+                                <input type="text" name="due" id="editTaskDue" required>
+                                <br>
+                                <br>
+                            </div>
+                        </div>
+                        <input type="hidden" name="timestamp" id="taskTimestamp" value="">
+                        <input type="submit" value="Update" data-dismiss="#editTaskmodal">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Task Modal-->
+    <div class="modal fade" id="shareTaskModal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title"><b>Share Task</b></h2>
+                    <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <form id="shareTaskForm" method="post" csrf-token="{{ csrf_token }}">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-sm-3">Task:</div>
+                            <div class="col-sm-9">
+                                <input type="text" name="task" name="task" id="shareTaskTitle" readonly>
+                                <br>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">Due by:</div>
+                            <div class="col-sm-9">
+                                <input type="text" name="due" id="shareTaskDue" readonly>
+                                <br>
+                                <br>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">Share with:</div>
+                            <div class="col-sm-9">
+                                <input type="email" name="due" id="shareUser" placeholder="Email address of share recipient">
+                                <br>
+                                <br>
+                            </div>
+                        </div>
+                        <input type="hidden" name="timestamp" id="taskTimestamp" value="">
+                        <input type="submit" value="Share" data-dismiss="#shareTaskmodal">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Share List Modal-->
+    <div class="modal fade" id="shareListModal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title"><b>Share Task</b></h2>
+                    <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <form id="shareListForm" method="post" csrf-token="{{ csrf_token }}">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-sm-3">Share with:</div>
+                            <div class="col-sm-9">
+                                <input type="email" name="due" id="shareUser" placeholder="Email address of share recipient">
+                                <br>
+                                <br>
+                            </div>
+                        </div>
+                        <input type="submit" value="Share" data-dismiss="#shareListmodal">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+    </div>
+    </div>
+    </div>
+
+    </div>
+
+    <!--Settings Modal-->
+    <div class="modal fade" id="settingsModal" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title"><b>Settings</b></h2>
+                    <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <form id="settingsForm" method="post" csrf-token="{{ csrf_token }}">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-sm-3">Firstname:</div>
+                            <div class="col-sm-9">
+                                <input type="text" name="fname" id="settingsFName" required>
+                                <br>
+                                <br>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">Surename:</div>
+                            <div class="col-sm-9">
+                                <input type="text" name="sname" id="settingsSName" required>
+                                <br>
+                                <br>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">Email:</div>
+                            <div class="col-sm-9">
+                                <input type="email" name="email" id="settingsEmail" required>
+                                <br>
+                                <br>
+                            </div>
+                        </div>
+                        <input type="submit" value="Update" data-dismiss="#settingsModal">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+    </div>
+    </div>
+    </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12" id="footer"></div>
+    </div>
+</body>
+
+</html>
